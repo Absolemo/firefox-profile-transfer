@@ -30,6 +30,8 @@ firefox-profile-transfer/
 │   └── transfer.py
 ├── install.sh
 ├── uninstall.sh
+├── .gitignore
+├── LICENSE
 └── README.md
 ```
 
@@ -99,4 +101,4 @@ This project is under active development.
 
 ## License
 
-License not yet selected.
+MIT License. See [LICENSE](LICENSE).
