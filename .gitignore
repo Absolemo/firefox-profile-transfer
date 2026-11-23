@@ -1,0 +1,22 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.venv/
+venv/
+
+# Development tools
+.vscode/
+.idea/
+
+# Operating system
+.DS_Store
+Thumbs.db
+
+# Firefox extension build artifacts
+*.xpi
+web-ext-artifacts/
+
+# Temporary files
+*.tmp
+*.log

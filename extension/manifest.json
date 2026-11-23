@@ -1,0 +1,22 @@
+{
+  "manifest_version": 2,
+  "name": "Firefox Profile Tab Transfer",
+  "version": "1.0.0",
+  "description": "Transfer individual, selected, or all tabs between Firefox profiles.",
+  "permissions": [
+    "menus",
+    "tabs",
+    "nativeMessaging"
+  ],
+  "background": {
+    "scripts": [
+      "background.js"
+    ],
+    "persistent": true
+  },
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "profile-tab-transfer@absolem.local"
+    }
+  }
+}
