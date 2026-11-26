@@ -1,17 +1,51 @@
-#!/usr/bin/python
+#!/usr/bin/env python3
 
 import configparser
 import json
 import os
 import struct
+import shutil
 import subprocess
 import sys
 from urllib.parse import urlsplit
 
-PROFILES_INI = os.path.expanduser(
-    "~/.mozilla/firefox/profiles.ini"
-)
-FIREFOX = "/usr/bin/firefox"
+
+def get_profiles_ini():
+    if sys.platform == "win32":
+        appdata = os.environ.get("APPDATA")
+        if not appdata:
+            raise RuntimeError("APPDATA environment variable not found")
+        return os.path.join(appdata, "Mozilla", "Firefox", "profiles.ini")
+
+    if sys.platform.startswith("linux"):
+        return os.path.expanduser("~/.mozilla/firefox/profiles.ini")
+
+    raise RuntimeError(f"Unsupported operating system: {sys.platform}")
+
+
+def get_firefox_executable():
+    firefox = shutil.which("firefox")
+    if firefox:
+        return firefox
+
+    if sys.platform == "win32":
+        import winreg
+
+        registry_keys = [
+            (winreg.HKEY_LOCAL_MACHINE, r"SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\firefox.exe"),
+            (winreg.HKEY_CURRENT_USER, r"SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\firefox.exe"),
+            (winreg.HKEY_LOCAL_MACHINE, r"SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\App Paths\firefox.exe"),
+        ]
+
+        for root, key_path in registry_keys:
+            try:
+                with winreg.OpenKey(root, key_path) as key:
+                    return winreg.QueryValue(key, None)
+            except OSError:
+                continue
+
+    raise RuntimeError("Firefox executable not found")
+
 
 SUPPORTED_SCHEMES = ("http", "https", "about", "file")
 
@@ -41,7 +75,7 @@ def send_message(message):
 
 def get_profiles():
     config = configparser.ConfigParser(interpolation=None)
-    config.read(PROFILES_INI)
+    config.read(get_profiles_ini())
 
     profiles = []
 
@@ -81,7 +115,7 @@ def transfer(profile, urls):
     for url in supported_urls:
         try:
             result = subprocess.run(
-                [FIREFOX, "-P", profile, "--new-tab", url],
+                [get_firefox_executable(), "-P", profile, "--new-tab", url],
                 stdin=subprocess.DEVNULL,
                 stdout=subprocess.DEVNULL,
                 stderr=subprocess.PIPE,

@@ -10,7 +10,7 @@ async function loadProfiles() {
     });
 
     if (!response.ok) {
-        throw new Error(response.error || "Profile konnten nicht geladen werden");
+        throw new Error(response.error || "Profiles could not be loaded");
     }
 
     return response.profiles;

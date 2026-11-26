@@ -11,13 +11,23 @@ A Firefox extension for transferring tabs between different Firefox profiles.
 - Reuse already running Firefox profile instances.
 - Keep the original tabs open after transferring.
 - Skip unsupported URLs instead of aborting the entire transfer.
+- Cross-platform native host for Linux and Windows.
 
 ## Requirements
 
-- Linux
+### Linux
+
 - Mozilla Firefox
 - Python 3
 - Bash
+
+### Windows
+
+- Mozilla Firefox
+- Python 3
+- Windows PowerShell
+
+Python must be installed and available through the `python` command.
 
 ## Project Structure
 
@@ -27,9 +37,12 @@ firefox-profile-transfer/
 │   ├── manifest.json
 │   └── background.js
 ├── native-host/
-│   └── transfer.py
+│   ├── transfer.py
+│   └── launch.bat
 ├── install.sh
 ├── uninstall.sh
+├── install.ps1
+├── uninstall.ps1
 ├── .gitignore
 ├── LICENSE
 └── README.md
@@ -39,7 +52,9 @@ firefox-profile-transfer/
 
 Clone or download this repository.
 
-Make the installer executable and run it:
+### Linux
+
+Run the installer:
 
 ```bash
 chmod +x install.sh
@@ -52,13 +67,31 @@ The installer copies the native messaging host to:
 ~/.local/share/firefox-profile-transfer/
 ```
 
-It also registers the native messaging host in:
+It registers the native messaging host in:
 
 ```text
 ~/.mozilla/native-messaging-hosts/
 ```
 
-## Loading the Firefox Extension
+### Windows
+
+Make sure Python 3 is installed and available through the `python` command.
+
+Open PowerShell in the project directory and run:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\install.ps1
+```
+
+The installer copies the native messaging host to:
+
+```text
+%LOCALAPPDATA%\FirefoxProfileTabTransfer\
+```
+
+It also registers the native messaging host in the current Windows user registry. Administrator privileges are not required.
+
+## Installing the Firefox Extension
 
 The extension can currently be loaded temporarily for development:
 
@@ -68,7 +101,9 @@ The extension can currently be loaded temporarily for development:
 
 Temporary extensions are removed when Firefox restarts.
 
-For permanent installation, the extension needs to be signed by Mozilla. An unlisted AMO release is planned.
+For permanent installation, the extension needs to be signed by Mozilla. An AMO release is planned.
+
+The native messaging host must be installed separately on each operating system.
 
 ## Usage
 
@@ -85,13 +120,23 @@ Original tabs remain open after transfer.
 
 ## Uninstallation
 
+### Linux
+
 Run:
 
 ```bash
 ./uninstall.sh
 ```
 
-This removes the native messaging host and its registration.
+### Windows
+
+Open PowerShell in the project directory and run:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\uninstall.ps1
+```
+
+Both uninstallers remove the native messaging host and its registration.
 
 Remove the Firefox extension separately through Firefox.
 
